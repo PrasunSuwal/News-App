@@ -1,27 +1,34 @@
-const express = require('express');
-const axios = require('axios');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
+const axios = require("axios");
+require("dotenv").config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+app.use(cors());
 
-app.use(cors());  // Allow CORS requests from your frontend
+app.get("/api/news", async (req, res) => {
+  const { country, category, page, pageSize } = req.query;
+  const apiKey = process.env.NEWS_API_KEY;
 
-// Proxy endpoint
-app.get('/api/news', async (req, res) => {
-    const { country, category, page, pageSize } = req.query;
-    const apiKey = process.env.NEWS_API_KEY; // Store your API key securely in environment variables
-    
-    const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${apiKey}&page=${page}&pageSize=${pageSize}`;
+  try {
+    const response = await axios.get("https://newsapi.org/v2/top-headlines", {
+      params: {
+        country,
+        category,
+        page,
+        pageSize,
+        apiKey,
+      },
+    });
 
-    try {
-        const response = await axios.get(url);
-        res.json(response.data); // Send the API response to the frontend
-    } catch (error) {
-        res.status(500).send('Error fetching news');
-    }
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error fetching news:", error.response?.data || error.message);
+    res.status(500).send("Error fetching news");
+  }
 });
 
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
