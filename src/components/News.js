@@ -122,7 +122,8 @@ export class News extends Component {
   fetchMoreData = async () => {
 
     this.setState({page: this.state.page + 1});
-    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${process.env.REACT_APP_NEWS_API_KEY}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    const url = `http://localhost:5000/api/news?country=${this.props.country}&category=${this.props.category}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+
 
     
     let data = await fetch(url);
